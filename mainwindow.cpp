@@ -28,36 +28,37 @@ void MainWindow::onPushButtonClicked()
     if (currentText == "Warning")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", EVENTLOG_WARNING_TYPE);
+        reportEvent("Пример события", "Дополнительный текст для Warning", EVENTLOG_WARNING_TYPE);
         // Выводим событие в пользовательский интерфейс
         ui->textEdit->append("Событие создано: " + currentText);
     }
     else if (currentText == "Error")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", EVENTLOG_ERROR_TYPE);
+        reportEvent("Пример события", "Дополнительный текст для Error", EVENTLOG_ERROR_TYPE);
         // Выводим событие в пользовательский интерфейс
         ui->textEdit->append("Событие создано: " + currentText);
     }
     else if (currentText == "Information")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", EVENTLOG_INFORMATION_TYPE);
+        reportEvent("Пример события", "Дополнительный текст для Information", EVENTLOG_INFORMATION_TYPE);
         // Выводим событие в пользовательский интерфейс
         ui->textEdit->append("Событие создано: " + currentText);
     }
 }
 
 
-void MainWindow::reportEvent(const QString& message, WORD eventType)
+
+void MainWindow::reportEvent(const QString& message, const QString& additionalText, WORD eventType)
 {
     HANDLE hEventLog = RegisterEventSourceA(NULL, "MyEventSource");  // Изменил на RegisterEventSourceA
 
     if (hEventLog != NULL)
     {
-        const char* messages[] = { message.toStdString().c_str() };  // Изменил на const char*
+        const char* messages[] = { message.toStdString().c_str(), additionalText.toStdString().c_str() };
 
-        ReportEventA(hEventLog, eventType, 0, 0, NULL, 1, 0, reinterpret_cast<const CHAR**>(messages), NULL);  // Изменил на ReportEventA
+        ReportEventA(hEventLog, eventType, 0, 0, NULL, 2, 0, reinterpret_cast<const CHAR**>(messages), NULL);
 
         DeregisterEventSource(hEventLog);
     }

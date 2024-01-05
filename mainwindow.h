@@ -18,7 +18,8 @@ public:
 
 private slots:
     void onPushButtonClicked();
-    void reportEvent(const QString& message, WORD eventType);
+    void reportEvent(const QString& message, const QString& additionalText, WORD eventType);
+
 
 
 private:
