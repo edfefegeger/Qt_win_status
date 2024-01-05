@@ -36,16 +36,30 @@ void MainWindow::onPushButtonClicked()
     else if (currentText == "Error")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", "Дополнительный текст для Error", EVENTLOG_ERROR_TYPE);
+        reportEvent("Пример события", user_text, EVENTLOG_ERROR_TYPE);
         // Выводим событие в пользовательский интерфейс
-        ui->textEdit->append("Событие создано: " + currentText);
+        ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
     }
     else if (currentText == "Information")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", "Дополнительный текст для Information", EVENTLOG_INFORMATION_TYPE);
+        reportEvent("Пример события", user_text, EVENTLOG_INFORMATION_TYPE);
         // Выводим событие в пользовательский интерфейс
-        ui->textEdit->append("Событие создано: " + currentText);
+        ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
+    }
+    else if (currentText == "Success Audit")
+    {
+        // Создаем и регистрируем событие в журнале событий
+        reportEvent("Пример события", user_text, EVENTLOG_AUDIT_SUCCESS);
+        // Выводим событие в пользовательский интерфейс
+        ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
+    }
+    else if (currentText == "Failure Audit")
+    {
+        // Создаем и регистрируем событие в журнале событий
+        reportEvent("Пример события", user_text, EVENTLOG_AUDIT_FAILURE);
+        // Выводим событие в пользовательский интерфейс
+        ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
     }
 }
 

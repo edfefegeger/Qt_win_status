@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>843</width>
-    <height>413</height>
+    <width>842</width>
+    <height>429</height>
    </rect>
   </property>
   <property name="font">
@@ -22,10 +22,10 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>280</y>
-      <width>331</width>
-      <height>71</height>
+      <x>10</x>
+      <y>290</y>
+      <width>311</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="font">
@@ -35,16 +35,16 @@
      </font>
     </property>
     <property name="text">
-     <string>Вызвать событие</string>
+     <string>Создать событие</string>
     </property>
    </widget>
    <widget class="QComboBox" name="comboBox_2">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>160</x>
       <y>50</y>
-      <width>81</width>
-      <height>31</height>
+      <width>161</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="editable">
@@ -65,6 +65,16 @@
       <string>Information</string>
      </property>
     </item>
+    <item>
+     <property name="text">
+      <string>Success Audit</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Failure Audit</string>
+     </property>
+    </item>
    </widget>
    <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
@@ -72,7 +82,7 @@
       <x>330</x>
       <y>10</y>
       <width>501</width>
-      <height>371</height>
+      <height>381</height>
      </rect>
     </property>
    </widget>
@@ -118,7 +128,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>843</width>
+     <width>842</width>
      <height>25</height>
     </rect>
    </property>
