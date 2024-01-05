@@ -23,12 +23,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::onPushButtonClicked()
 {
-    // Создаем и регистрируем событие в журнале событий
-    reportEvent("Пример события", EVENTLOG_ERROR_TYPE);
+    QString currentText = ui->comboBox_2->currentText();
 
-    // Выводим событие в пользовательский интерфейс
-    ui->textEdit->setPlainText("Событие создано: Пример события");  // Изменил на plainTextEdit
+    if (currentText == "Warning")
+    {
+        // Создаем и регистрируем событие в журнале событий
+        reportEvent("Пример события", EVENTLOG_WARNING_TYPE);
+        // Выводим событие в пользовательский интерфейс
+        ui->textEdit->append("Событие создано: " + currentText);
+    }
+    else if (currentText == "Error")
+    {
+        // Создаем и регистрируем событие в журнале событий
+        reportEvent("Пример события", EVENTLOG_ERROR_TYPE);
+        // Выводим событие в пользовательский интерфейс
+        ui->textEdit->append("Событие создано: " + currentText);
+    }
+    else if (currentText == "Information")
+    {
+        // Создаем и регистрируем событие в журнале событий
+        reportEvent("Пример события", EVENTLOG_INFORMATION_TYPE);
+        // Выводим событие в пользовательский интерфейс
+        ui->textEdit->append("Событие создано: " + currentText);
+    }
 }
+
 
 void MainWindow::reportEvent(const QString& message, WORD eventType)
 {
