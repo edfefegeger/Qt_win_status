@@ -24,13 +24,14 @@ MainWindow::~MainWindow()
 void MainWindow::onPushButtonClicked()
 {
     QString currentText = ui->comboBox_2->currentText();
+    QString user_text = ui->textEdit_2->toPlainText();
 
     if (currentText == "Warning")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", "Дополнительный текст для Warning", EVENTLOG_WARNING_TYPE);
+        reportEvent("Пример события", user_text, EVENTLOG_WARNING_TYPE);
         // Выводим событие в пользовательский интерфейс
-        ui->textEdit->append("Событие создано: " + currentText);
+        ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
     }
     else if (currentText == "Error")
     {
