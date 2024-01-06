@@ -85,7 +85,7 @@ void MainWindow::reportEvent(const QString& message, const QString& additionalTe
         eventLog.append(eventInfo);
 
         // Update the QTextEdit widget with the new event information
-        updateEventLogUI();
+
     }
     else
     {
