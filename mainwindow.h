@@ -1,14 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <Windows.h>
-#include <QMainWindow>
-#include <QTextEdit>
 #include <QStringList>
-extern "C" {
-#include <windows.h>
-#include <winevt.h>
-}
+#include <QString>
+#include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,17 +19,13 @@ public:
 
 private slots:
     void onPushButtonClicked();
-    void onUpdateEventLog();
+    void reportEvent(const QString& message, const QString& additionalText, WORD eventType);
+    void updateEventLogUI();
+
+
 
 private:
     Ui::MainWindow *ui;
     QStringList eventLog;
-
-    void reportEvent(const QString &message, const QString &additionalText, const QString &eventType);
-    void updateEventLogUI();
-    void startEventLogMonitoring();
-    void stopEventLogMonitoring();
-    void parseAndDisplayEvent(void *hEvent, QTextEdit *textEdit);
 };
-
 #endif // MAINWINDOW_H

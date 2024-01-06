@@ -1,82 +1,106 @@
-// mainwindow.cpp
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDateTime>
 #include <QMessageBox>
-#include <QTimer>
+#include <QDateTime>
+#include <QTextStream>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+extern "C" {
+#include <windows.h>
+}
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
     connect(ui->pushButton, &QPushButton::clicked, this, &MainWindow::onPushButtonClicked);
-
-    // Инициализация таймера для периодического обновления журнала
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &MainWindow::onUpdateEventLog);
-    timer->start(5000); // Обновление каждые 5 секунд (можно изменить интервал по вашему усмотрению)
-
-    // Запуск мониторинга событий из журнала
-    startEventLogMonitoring();
 }
 
 MainWindow::~MainWindow()
 {
-    // Остановка мониторинга событий при закрытии приложения
-    stopEventLogMonitoring();
-
     delete ui;
 }
 
 void MainWindow::onPushButtonClicked()
 {
     QString currentText = ui->comboBox_2->currentText();
-    QString userText = ui->textEdit_2->toPlainText();
+    QString user_text = ui->textEdit_2->toPlainText();
 
-    // Создаем и регистрируем событие в журнале
-    reportEvent("Пример события", userText, currentText);
-
-    // Выводим событие в пользовательский интерфейс
-    ui->textEdit->append("Событие создано: " + currentText + "  " + userText);
+    if (currentText == "Warning")
+    {
+        // Создаем и регистрируем событие в журнале событий
+        reportEvent("Пример события", user_text, EVENTLOG_WARNING_TYPE);
+        // Выводим событие в пользовательский интерфейс
+        ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
+    }
+    else if (currentText == "Error")
+    {
+        // Создаем и регистрируем событие в журнале событий
+        reportEvent("Пример события", user_text, EVENTLOG_ERROR_TYPE);
+        // Выводим событие в пользовательский интерфейс
+        ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
+    }
+    else if (currentText == "Information")
+    {
+        // Создаем и регистрируем событие в журнале событий
+        reportEvent("Пример события", user_text, EVENTLOG_INFORMATION_TYPE);
+        // Выводим событие в пользовательский интерфейс
+        ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
+    }
+    else if (currentText == "Success Audit")
+    {
+        // Создаем и регистрируем событие в журнале событий
+        reportEvent("Пример события", user_text, EVENTLOG_AUDIT_SUCCESS);
+        // Выводим событие в пользовательский интерфейс
+        ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
+    }
+    else if (currentText == "Failure Audit")
+    {
+        // Создаем и регистрируем событие в журнале событий
+        reportEvent("Пример события", user_text, EVENTLOG_AUDIT_FAILURE);
+        // Выводим событие в пользовательский интерфейс
+        ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
+    }
 }
 
-void MainWindow::reportEvent(const QString &message, const QString &additionalText, const QString &eventType)
+
+
+void MainWindow::reportEvent(const QString& message, const QString& additionalText, WORD eventType)
 {
-    // Получаем текущую дату и время
-    QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    HANDLE hEventLog = RegisterEventSourceA(NULL, "MyEventSource");
 
-    // Создаем строку для записи
-    QString logEntry = QString("[%1] %2: %3").arg(timestamp, eventType, additionalText);
+    if (hEventLog != NULL)
+    {
+        const char* messages[] = { message.toStdString().c_str(), additionalText.toStdString().c_str() };
 
-    // Добавляем событие в список
-    eventLog.append(logEntry);
+        ReportEventA(hEventLog, eventType, 0, 0, NULL, 2, 0, reinterpret_cast<const CHAR**>(messages), NULL);
 
-    // В данном примере мы не чистим список, но в реальном приложении вам, возможно, придется ограничивать его размер
+        DeregisterEventSource(hEventLog);
+
+        // Store the event information in the eventLog QStringList
+        QString eventInfo = QString("Event Type: %1, Message: %2, Additional Text: %3")
+                                .arg(eventType)
+                                .arg(message)
+                                .arg(additionalText);
+        eventLog.append(eventInfo);
+
+        // Update the QTextEdit widget with the new event information
+        updateEventLogUI();
+    }
+    else
+    {
+        QMessageBox::critical(this, "Error", "Failed to register event source.");
+    }
 }
 
 void MainWindow::updateEventLogUI()
 {
-    // Выводим все события в QTextEdit
+    // Clear existing content in the QTextEdit
+    ui->textEdit->clear();
+
+    // Display all events in the QTextEdit
     for (const QString &event : eventLog)
     {
         ui->textEdit->append(event);
     }
-}
-
-void MainWindow::startEventLogMonitoring()
-{
-    // Запуск мониторинга событий (если необходимо)
-    // В данном примере этот метод может быть пустым, поскольку мониторинг реализован через таймер
-}
-
-void MainWindow::stopEventLogMonitoring()
-{
-    // Остановка мониторинга событий (если необходимо)
-    // В данном примере этот метод может быть пустым, поскольку мониторинг реализован через таймер
-}
-
-void MainWindow::onUpdateEventLog()
-{
-    // Обновление журнала событий
-    updateEventLogUI();
 }
