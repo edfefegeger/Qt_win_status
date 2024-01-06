@@ -104,7 +104,8 @@ void MainWindow::startEventLogMonitoring()
 
         pevlr = (EVENTLOGRECORD*)&bBuffer;
 
-
+        // Очищаем список событий
+        eventLog.clear();
 
         // Сначала получаем общее количество записей в журнале
         DWORD dwRecordCount;
@@ -122,18 +123,21 @@ void MainWindow::startEventLogMonitoring()
                 // Получить тип события
                 WORD eventType = pevlr->EventType;
 
-                // Получить источник события
-                QString source = QString::fromWCharArray(reinterpret_cast<const wchar_t*>((LPBYTE)pevlr + pevlr->StringOffset));
+                // Получить время события
+                QDateTime eventTime = QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(pevlr->TimeGenerated) * 1000);
+                QString formattedTime = eventTime.toString("yyyy-MM-dd hh:mm:ss");
 
-                // Получить описание события
-                QString message = QString::fromWCharArray(reinterpret_cast<const wchar_t*>((LPBYTE)pevlr + pevlr->UserSidOffset));
+                // Получить источник события
+                // Получить источник события
+                QString source = QString::fromLocal8Bit(reinterpret_cast<const char*>((LPBYTE)pevlr + pevlr->StringOffset));
 
                 // Добавить последнее событие в список
-                QString eventInfo = QString("Event Type: %1, Source: %2, Message: %3")
+                QString eventInfo = QString("Event Time: %1, Event Type: %2, Source: %3")
+                                        .arg(formattedTime)
                                         .arg(eventType)
-                                        .arg(source)
-                                        .arg(message);
+                                        .arg(source);
                 eventLog.append(eventInfo);
+
 
                 // Обновить интерфейс
                 updateEventLogUI();
@@ -160,10 +164,10 @@ void MainWindow::startEventLogMonitoring()
 
 
 
+
+
 void MainWindow::updateEventLogUI()
 {
-    // Clear existing content in the QTextEdit
-    ui->textEdit->clear();
 
     // Display all events in the QTextEdit
     for (const QString &event : eventLog)
@@ -171,7 +175,6 @@ void MainWindow::updateEventLogUI()
         ui->textEdit->append(event);
     }
 }
-
 void MainWindow::on_pushButton_2_clicked()
 {
     startEventLogMonitoring();
