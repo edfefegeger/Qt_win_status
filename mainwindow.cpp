@@ -160,12 +160,6 @@ void MainWindow::startEventLogMonitoring()
     }
 }
 
-
-
-
-
-
-
 void MainWindow::updateEventLogUI()
 {
 
@@ -179,6 +173,6 @@ void MainWindow::on_pushButton_2_clicked()
 {
     startEventLogMonitoring();
     // Update the QTextEdit widget with the new event information
-    updateEventLogUI();
+
 }
 
