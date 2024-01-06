@@ -24,18 +24,17 @@ public:
 
 private slots:
     void onPushButtonClicked();
-    void reportEvent(const QString& message, const QString& additionalText, WORD eventType);
-    void updateEventLogUI();
-    void parseWindowsEventLog(QTextEdit* textEdit);
-    void parseAndDisplayEvent(EVT_HANDLE hEvent, QTextEdit* textEdit);
-    QString variantToString(const EVT_VARIANT& variant);
-    void startEventLogMonitoring();
-    void stopEventLogMonitoring();
     void onUpdateEventLog();
 
 private:
-    QStringList eventLog;
     Ui::MainWindow *ui;
+    QStringList eventLog;
+
+    void reportEvent(const QString &message, const QString &additionalText, const QString &eventType);
+    void updateEventLogUI();
+    void startEventLogMonitoring();
+    void stopEventLogMonitoring();
+    void parseAndDisplayEvent(void *hEvent, QTextEdit *textEdit);
 };
 
 #endif // MAINWINDOW_H
