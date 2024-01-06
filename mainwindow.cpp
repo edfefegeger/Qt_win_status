@@ -84,8 +84,6 @@ void MainWindow::reportEvent(const QString& message, const QString& additionalTe
                                 .arg(additionalText);
         eventLog.append(eventInfo);
 
-        // Update the QTextEdit widget with the new event information
-
     }
     else
     {
@@ -111,14 +109,19 @@ void MainWindow::startEventLogMonitoring()
         DWORD dwRecordCount;
         if (GetNumberOfEventLogRecords(hEventLog, &dwRecordCount))
         {
-            // Затем получаем последнюю запись
-            if (ReadEventLog(hEventLog,
-                             EVENTLOG_SEQUENTIAL_READ | EVENTLOG_BACKWARDS_READ,
-                             0,
-                             pevlr,
-                             sizeof(bBuffer),
-                             &dwRead,
-                             &dwNeeded))
+            // Определите количество записей, которые вы хотите прочитать (например, 5)
+            const int maxRecords = 5;
+            int recordsRead = 0;
+
+            // Затем получаем последние записи
+            while (recordsRead < maxRecords &&
+                   ReadEventLog(hEventLog,
+                                 EVENTLOG_SEQUENTIAL_READ | EVENTLOG_BACKWARDS_READ,
+                                 0,
+                                 pevlr,
+                                 sizeof(bBuffer),
+                                 &dwRead,
+                                 &dwNeeded))
             {
                 // Получить тип события
                 WORD eventType = pevlr->EventType;
@@ -127,7 +130,6 @@ void MainWindow::startEventLogMonitoring()
                 QDateTime eventTime = QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(pevlr->TimeGenerated) * 1000);
                 QString formattedTime = eventTime.toString("yyyy-MM-dd hh:mm:ss");
 
-                // Получить источник события
                 // Получить источник события
                 QString source = QString(reinterpret_cast<const char*>((LPBYTE)pevlr + pevlr->StringOffset));
 
@@ -138,14 +140,11 @@ void MainWindow::startEventLogMonitoring()
                                         .arg(source);
                 eventLog.append(eventInfo);
 
+                recordsRead++;
+            }
 
-                // Обновить интерфейс
-                updateEventLogUI();
-            }
-            else
-            {
-                QMessageBox::critical(this, "Error", "Failed to read the last event log record.");
-            }
+            // Обновить интерфейс
+            updateEventLogUI();
         }
         else
         {
@@ -159,6 +158,7 @@ void MainWindow::startEventLogMonitoring()
         QMessageBox::critical(this, "Error", "Failed to open EventLog.");
     }
 }
+
 
 void MainWindow::updateEventLogUI()
 {
