@@ -129,7 +129,7 @@ void MainWindow::startEventLogMonitoring()
 
                 // Получить источник события
                 // Получить источник события
-                QString source = QString::fromLocal8Bit(reinterpret_cast<const char*>((LPBYTE)pevlr + pevlr->StringOffset));
+                QString source = QString(reinterpret_cast<const char*>((LPBYTE)pevlr + pevlr->StringOffset));
 
                 // Добавить последнее событие в список
                 QString eventInfo = QString("Event Time: %1, Event Type: %2, Source: %3")
