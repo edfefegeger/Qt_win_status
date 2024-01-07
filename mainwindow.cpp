@@ -162,17 +162,24 @@ void MainWindow::startEventLogMonitoring()
 
 void MainWindow::updateEventLogUI()
 {
-
-    // Display all events in the QTextEdit
+    // Display all events in the QTextEdit with spaces between them
     for (const QString &event : eventLog)
     {
         ui->textEdit->append(event);
+        ui->textEdit->append("");
     }
 }
+
 void MainWindow::on_pushButton_2_clicked()
 {
     startEventLogMonitoring();
     // Update the QTextEdit widget with the new event information
 
+}
+
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    ui->textEdit->clear();
 }
 
