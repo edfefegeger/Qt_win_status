@@ -116,7 +116,7 @@ void MainWindow::startEventLogMonitoring()
             // Затем получаем последние записи
             while (recordsRead < maxRecords &&
                    ReadEventLog(hEventLog,
-                                 EVENTLOG_SEQUENTIAL_READ | EVENTLOG_BACKWARDS_READ,
+                                 EVENTLOG_BACKWARDS_READ | EVENTLOG_SEQUENTIAL_READ,
                                  0,
                                  pevlr,
                                  sizeof(bBuffer),
@@ -133,7 +133,7 @@ void MainWindow::startEventLogMonitoring()
                 // Получить источник события
                 QString source = QString(reinterpret_cast<const char*>((LPBYTE)pevlr + pevlr->StringOffset));
 
-                // Добавить последнее событие в список
+                // Добавить последнее событие в конец списка
                 QString eventInfo = QString("Event Time: %1, Event Type: %2, Source: %3")
                                         .arg(formattedTime)
                                         .arg(eventType)
