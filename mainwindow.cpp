@@ -29,35 +29,35 @@ void MainWindow::onPushButtonClicked()
     if (currentText == "Warning")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", user_text, EVENTLOG_WARNING_TYPE);
+        reportEvent(user_text, user_text, EVENTLOG_WARNING_TYPE);
         // Выводим событие в пользовательский интерфейс
         ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
     }
     else if (currentText == "Error")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", user_text, EVENTLOG_ERROR_TYPE);
+        reportEvent(user_text, user_text, EVENTLOG_ERROR_TYPE);
         // Выводим событие в пользовательский интерфейс
         ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
     }
     else if (currentText == "Information")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", user_text, EVENTLOG_INFORMATION_TYPE);
+        reportEvent(user_text, user_text, EVENTLOG_INFORMATION_TYPE);
         // Выводим событие в пользовательский интерфейс
         ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
     }
     else if (currentText == "Success Audit")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", user_text, EVENTLOG_AUDIT_SUCCESS);
+        reportEvent(user_text, user_text, EVENTLOG_AUDIT_SUCCESS);
         // Выводим событие в пользовательский интерфейс
         ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
     }
     else if (currentText == "Failure Audit")
     {
         // Создаем и регистрируем событие в журнале событий
-        reportEvent("Пример события", user_text, EVENTLOG_AUDIT_FAILURE);
+        reportEvent(user_text, user_text, EVENTLOG_AUDIT_FAILURE);
         // Выводим событие в пользовательский интерфейс
         ui->textEdit->append("Событие создано: " + currentText + "  " + user_text);
     }
@@ -105,51 +105,35 @@ void MainWindow::startEventLogMonitoring()
         // Очищаем список событий
         eventLog.clear();
 
-        // Сначала получаем общее количество записей в журнале
-        DWORD dwRecordCount;
-        if (GetNumberOfEventLogRecords(hEventLog, &dwRecordCount))
+        // Затем получаем все записи
+        while (ReadEventLog(hEventLog,
+                            EVENTLOG_BACKWARDS_READ | EVENTLOG_SEQUENTIAL_READ,
+                            0,
+                            pevlr,
+                            sizeof(bBuffer),
+                            &dwRead,
+                            &dwNeeded))
         {
-            // Определите количество записей, которые вы хотите прочитать (например, 5)
-            const int maxRecords = 5;
-            int recordsRead = 0;
+            // Получить тип события
+            WORD eventType = pevlr->EventType;
 
-            // Затем получаем последние записи
-            while (recordsRead < maxRecords &&
-                   ReadEventLog(hEventLog,
-                                 EVENTLOG_BACKWARDS_READ | EVENTLOG_SEQUENTIAL_READ,
-                                 0,
-                                 pevlr,
-                                 sizeof(bBuffer),
-                                 &dwRead,
-                                 &dwNeeded))
-            {
-                // Получить тип события
-                WORD eventType = pevlr->EventType;
+            // Получить время события
+            QDateTime eventTime = QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(pevlr->TimeGenerated) * 1000);
+            QString formattedTime = eventTime.toString("yyyy-MM-dd hh:mm:ss");
 
-                // Получить время события
-                QDateTime eventTime = QDateTime::fromMSecsSinceEpoch(static_cast<qint64>(pevlr->TimeGenerated) * 1000);
-                QString formattedTime = eventTime.toString("yyyy-MM-dd hh:mm:ss");
+            // Получить источник события
+            QString source = QString(reinterpret_cast<const char*>((LPBYTE)pevlr + pevlr->StringOffset));
 
-                // Получить источник события
-                QString source = QString(reinterpret_cast<const char*>((LPBYTE)pevlr + pevlr->StringOffset));
-
-                // Добавить последнее событие в конец списка
-                QString eventInfo = QString("Event Time: %1, Event Type: %2, Source: %3")
-                                        .arg(formattedTime)
-                                        .arg(eventType)
-                                        .arg(source);
-                eventLog.append(eventInfo);
-
-                recordsRead++;
-            }
-
-            // Обновить интерфейс
-            updateEventLogUI();
+            // Добавить последнее событие в конец списка
+            QString eventInfo = QString("Время события: %1, Тип события: %2, Источник: %3")
+                                    .arg(formattedTime)
+                                    .arg(eventType)
+                                    .arg(source);
+            eventLog.append(eventInfo);
         }
-        else
-        {
-            QMessageBox::critical(this, "Error", "Failed to get the number of event log records.");
-        }
+
+        // Обновить интерфейс
+        updateEventLogUI();
 
         CloseEventLog(hEventLog);
     }
@@ -158,6 +142,8 @@ void MainWindow::startEventLogMonitoring()
         QMessageBox::critical(this, "Error", "Failed to open EventLog.");
     }
 }
+
+
 
 
 void MainWindow::updateEventLogUI()
