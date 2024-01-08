@@ -98,7 +98,19 @@ void MainWindow::startEventLogMonitoring()
     {
         EVENTLOGRECORD* pevlr;
         // Кастомное значение использованных байт, можете настроить под свою конфигурацию
-        BYTE bBuffer[8192];
+        // Получаем размер буфера из textEdit_3
+        int bufferSize = ui->textEdit_3->toPlainText().toInt();
+
+        // Проверяем, успешно ли удалось преобразовать текст в число
+        if (bufferSize == 0)
+        {
+            QMessageBox::critical(this, "Ошибка", "Некорректное значение размера буфера.");
+            return; // Выход из метода в случае ошибки
+        }
+
+        // Кастомное значение использованных байт
+        BYTE bBuffer[bufferSize];
+
         DWORD dwRead, dwNeeded;
 
         pevlr = (EVENTLOGRECORD*)&bBuffer;

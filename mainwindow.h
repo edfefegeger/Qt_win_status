@@ -22,11 +22,7 @@ private slots:
     void reportEvent(const QString& message, const QString& additionalText, WORD eventType);
     void updateEventLogUI();
     void startEventLogMonitoring();
-
-
-
     void on_pushButton_2_clicked();
-
     void on_pushButton_3_clicked();
 
 private:
